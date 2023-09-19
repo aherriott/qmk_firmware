@@ -262,10 +262,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [MOUSE] = LAYOUT(
-        KC_WH_L,    KC_WH_U,        KC_WH_D,    KC_WH_R,    XXX,            XXX,    KC_MUTE,    KC_VOLU,    KC_VOLD,    KC_BRIU,
-        KC_LCTL,    KC_LSFT,        KC_BTN2,    KC_BTN1,    KC_BTN3,        XXX,    XXX,        XXX,        XXX,        XXX,
-        KC_LALT,    LCTL(KC_LSFT),  XXX,        XXX,        XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
-                                    ___,        ___,        ___,            ___,    ___,        ___
+        KC_WH_L,    KC_LALT,    KC_LSFT,    KC_WH_R,    XXX,            XXX,    KC_MUTE,    KC_VOLU,    KC_VOLD,    KC_BRIU,
+        KC_LCTL,    KC_WH_U,    KC_WH_D,    KC_BTN1,    KC_BTN3,        XXX,    XXX,        XXX,        XXX,        XXX,
+        XXX,        XXX,        XXX,        KC_BTN2,    XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
+                                ___,        ___,        ___,            ___,    ___,        ___
     ),
 
     [SYM] = LAYOUT(
