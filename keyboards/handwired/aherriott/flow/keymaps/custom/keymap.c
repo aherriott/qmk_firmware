@@ -262,9 +262,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [MOUSE] = LAYOUT(
-        KC_WH_L,    KC_LALT,    KC_LSFT,    KC_WH_R,    XXX,            XXX,    KC_MUTE,    KC_VOLU,    KC_VOLD,    KC_BRIU,
-        KC_LCTL,    KC_WH_U,    KC_WH_D,    KC_BTN1,    KC_BTN3,        XXX,    XXX,        XXX,        XXX,        XXX,
-        XXX,        XXX,        XXX,        KC_BTN2,    XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
+        KC_LCTL,    KC_LALT,    KC_LSFT,    XXX,        XXX,            XXX,    KC_MUTE,    KC_VOLU,    KC_VOLD,    KC_BRIU,
+        KC_WH_U,    KC_WH_D,    KC_BTN2,    KC_BTN1,    KC_BTN3,        XXX,    XXX,        XXX,        XXX,        XXX,
+        KC_WH_L,    XXX,        XXX,        KC_WH_R,    XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
                                 ___,        ___,        ___,            ___,    ___,        ___
     ),
 
@@ -283,15 +283,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [NUM] = LAYOUT(
-        SEL_L_LEFT,     SEL_W_LEFT,     SEL_W_RIGHT,    SEL_L_RIGHT,    SEL_LINE,           KC_PERC,    KC_7,   KC_8,   KC_9,   KC_COLN,
+        WORD_LEFT,      SCRL_UP,        SCRL_DOWN,      WORD_RIGHT,     SEL_LINE,           KC_PERC,    KC_7,   KC_8,   KC_9,   KC_COLN,
         OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LSFT),  OSM(MOD_LCTL),  QK_REP,             KC_DOT,     KC_4,   KC_5,   KC_6,   KC_0,
         HYP_4,          HYP_3,          HYP_2,          HYP_1,          HYP_0,              KC_COMM,    KC_1,   KC_2,   KC_3,   KC_SLSH,
                                         QK_RBT,         XXX,            ___,                ___,        ___,    ___
     ),
 
     [VSCODE] = LAYOUT(
-        HOME_FILE,      SCRL_UP,        SCRL_DOWN,      END_FILE,       FOLD_REG,           PALLATE,    WORD_LEFT,  MV_L_DOWN,  MV_L_UP,    WORD_RIGHT,
-        OSM(MOD_LGUI),   OSM(MOD_LALT), OSM(MOD_LSFT),  OSM(MOD_LCTL),  QK_REP,             ZEN_MODE,   FILE_LEFT,  TOG_TERM,   FTREE_TOG,  FILE_RIGHT,
+        SEL_W_LEFT,     SEL_L_LEFT,     SEL_L_RIGHT,    SEL_W_RIGHT,    FOLD_REG,           PALLATE,    SEL_L_LEFT, MV_L_DOWN,  MV_L_UP,    SEL_L_RIGHT,
+        OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LSFT),  OSM(MOD_LCTL),  QK_REP,             ZEN_MODE,   FILE_LEFT,  TOG_TERM,   FTREE_TOG,  FILE_RIGHT,
         BOX_LEFT,       BOX_UP,         BOX_DOWN,       BOX_RIGHT,      UNFOLD_REG,         TOG_WRDW,   RVL_EXP,    CUR_DOWN,   CUR_UP,     CUR_UNDO,
                                         ___,            ___,            ___,                ___,        XXX,        QK_RBT
     ),
