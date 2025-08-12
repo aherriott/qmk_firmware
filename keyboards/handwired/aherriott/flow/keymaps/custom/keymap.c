@@ -10,6 +10,8 @@ void pointing_device_init_kb(void) {
 #endif
 }
 
+bool is_mac_mode = true; // start in macOS mode
+
 // Layers
 enum {
     DEFAULT,
@@ -50,12 +52,13 @@ enum {
 #define PASTE LCTL(KC_V)
 #define UNDO LCTL(KC_Z)
 #define REDO LCTL(KC_Y)
-#define WORD_LEFT   LCTL(KC_LEFT)
-#define WORD_RIGHT  LCTL(KC_RIGHT)
-#define SEL_L_LEFT LSFT(KC_HOME)
-#define SEL_W_LEFT LSFT(LCTL(KC_LEFT))
-#define SEL_W_RIGHT LSFT(LCTL(KC_RIGHT))
-#define SEL_L_RIGHT LSFT(KC_END)
+// #define WORD_LEFT   LCTL(KC_LEFT)
+// #define WORD_RIGHT  LCTL(KC_RIGHT)
+// #define SEL_L_LEFT LSFT(KC_HOME)
+// #define SEL_W_LEFT LSFT(LCTL(KC_LEFT))
+// #define SEL_W_RIGHT LSFT(LCTL(KC_RIGHT))
+// #define SEL_L_RIGHT LSFT(KC_END)
+#define SEL_ALL LCTL(KC_A)
 
 // App switching (use with jumpapp on ubuntu, etc)
 #define HYP_0 HYPR(KC_0)
@@ -88,33 +91,27 @@ enum {
 #define CUR_UNDO    LCTL(KC_U)
 
 //***************************************
-// Tap Dance
-//***************************************
-
-enum tap_dance {
-    CPY_CUT,
-    BCK_FWD,
-    FND_REP,
-};
-
-// Tap Dance definitions
-tap_dance_action_t tap_dance_actions[] = {
-    [CPY_CUT] = ACTION_TAP_DANCE_DOUBLE(LCTL(KC_C), LCTL(KC_X)),
-    [BCK_FWD] = ACTION_TAP_DANCE_DOUBLE(LALT(KC_LEFT), LALT(KC_RIGHT)),
-    [FND_REP] = ACTION_TAP_DANCE_DOUBLE(LCTL(KC_F), LCTL(KC_H)),
-};
-
-//***************************************
 // Custom Keys
 //***************************************
 
 enum custom_keycodes {
     // Macros
-    SCRL_UP = SAFE_RANGE,
+    TOGGLE_OS = SAFE_RANGE, // Add more custom codes after this
+    WORD_LEFT,
+    WORD_RIGHT,
+    LINE_LEFT,
+    LINE_RIGHT,
+    SEL_L_LEFT,
+    SEL_W_LEFT,
+    SEL_W_RIGHT,
+    SEL_L_RIGHT,
+    SCRL_UP,
     SCRL_DOWN,
     DBL_PIPE,
     DBL_EQL,
     DBL_COLN,
+    SEL_N_LINE_R,
+    SEL_P_LINE_L,
     SN_TOGG,
     DDOT_SLSH,
     SEL_LINE,
@@ -153,12 +150,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         MACRO(DBL_EQL, "==")
         MACRO(DBL_COLN, "::")
         MACRO(DDOT_SLSH, "../")
+        MACRO(SEL_N_LINE_R, SS_TAP(X_DOWN)SS_LSFT(SS_TAP(X_END)))
+        MACRO(SEL_P_LINE_L, SS_TAP(X_UP)SS_LSFT(SS_TAP(X_HOME)))
         MACRO(SEL_LINE, SS_TAP(X_HOME)SS_LSFT(SS_TAP(X_END)))
+
         // VSCode Macros
         MACRO(FOLD_REG, SS_LCTL("k0"))
         MACRO(UNFOLD_REG, SS_LCTL("kj"))
         MACRO(ZEN_MODE, SS_LCTL("k")"z")
         MACRO(RVL_EXP, SS_LCTL("k")"r")
+
+        // // Override slash:
+        // // Detect Shift + /
+        // case KC_SLSH:
+        //     if(record->event.pressed) {
+        //         if ((get_mods() & MOD_MASK_SHIFT)) {
+        //             // Temporarily unregister Shift so it's not active for the next key
+        //             unregister_mods(MOD_MASK_SHIFT);
+        //             wait_ms(10);
+        //             tap_code(KC_BSLS); // Send backslash
+        //             return false;      // Skip normal processing
+        //         }
+        //     }
+
         // Snake Case
         case SN_TOGG:
             if(record->event.pressed) {
@@ -185,12 +199,86 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             break;
+        case TOGGLE_OS:
+            if(record->event.pressed) {
+                is_mac_mode = !is_mac_mode;
+            }
+            return false;
+
+        case WORD_LEFT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LALT(KC_LEFT)  : LCTL(KC_LEFT));
+            }
+            return false;
+
+        case WORD_RIGHT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LALT(KC_RIGHT) : LCTL(KC_RIGHT));
+            }
+            return false;
+
+        case LINE_LEFT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LCTL(KC_LEFT)  : KC_HOME);
+            }
+            return false;
+
+        case LINE_RIGHT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LCTL(KC_RIGHT) : KC_END);
+            }
+            return false;
+
+        case SEL_L_LEFT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LSFT(LCTL(KC_LEFT)) : LSFT(KC_HOME));
+            }
+            return false;
+
+        case SEL_W_LEFT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LSFT(LALT(KC_LEFT)) : LSFT(LCTL(KC_LEFT)));
+            }
+            return false;
+
+        case SEL_W_RIGHT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LSFT(LALT(KC_RIGHT)) : LSFT(LCTL(KC_RIGHT)));
+            }
+            return false;
+
+        case SEL_L_RIGHT:
+            if(record->event.pressed) {
+                tap_code16(is_mac_mode ? LSFT(LCTL(KC_RIGHT)) : LSFT(KC_END));
+            }
+            return false;
         default:
             snake_case = false;
             break;
     }
     return true;
 }
+
+//***************************************
+// Tap Dance
+//***************************************
+
+enum tap_dance {
+    CPY_CUT,
+    BCK_FWD,
+    FND_REP,
+    SEL_R_TD,
+    SEL_L_TD,
+};
+
+// Tap Dance definitions
+tap_dance_action_t tap_dance_actions[] = {
+    [CPY_CUT] = ACTION_TAP_DANCE_DOUBLE(LCTL(KC_C), LCTL(KC_X)),
+    [BCK_FWD] = ACTION_TAP_DANCE_DOUBLE(LALT(KC_LEFT), LALT(KC_RIGHT)),
+    [FND_REP] = ACTION_TAP_DANCE_DOUBLE(LCTL(KC_F), LCTL(KC_H)),
+    [SEL_R_TD] = ACTION_TAP_DANCE_DOUBLE(SEL_L_RIGHT, SEL_N_LINE_R),
+    [SEL_L_TD] = ACTION_TAP_DANCE_DOUBLE(SEL_L_LEFT, SEL_P_LINE_L),
+};
 
 //***************************************
 // Combos
@@ -262,37 +350,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [MOUSE] = LAYOUT(
-        KC_LCTL,    KC_LALT,    KC_LSFT,    XXX,        XXX,            XXX,    KC_MUTE,    KC_VOLU,    KC_VOLD,    KC_BRIU,
+        KC_LCTL,    KC_LALT,    KC_LSFT,    KC_MUTE,    XXX,            XXX,    XXX,    XXX,        XXX,    KC_BRIU,
         KC_WH_U,    KC_WH_D,    KC_BTN2,    KC_BTN1,    KC_BTN3,        XXX,    XXX,        XXX,        XXX,        XXX,
-        KC_WH_L,    XXX,        XXX,        KC_WH_R,    XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
+        KC_WH_L,    KC_VOLU,    KC_VOLD,    KC_WH_R,    XXX,            XXX,    KC_MRWD,    KC_MPLY,    KC_MFFD,    KC_BRID,
                                 ___,        ___,        ___,            ___,    ___,        ___
     ),
 
     [SYM] = LAYOUT(
-        KC_PIPE,    KC_PLUS,    KC_AT,      KC_LCBR,    KC_RCBR,        KC_CIRC,    KC_PERC,    KC_DLR,     CW_TOGG,    DBL_COLN,
+        KC_PSCR,    KC_PLUS,    KC_AT,      KC_LCBR,    KC_RCBR,        KC_CIRC,    KC_PERC,    KC_DLR,     CW_TOGG,    DBL_COLN,
         KC_AMPR,    KC_MINUS,   KC_EQL,     KC_LPRN,    KC_RPRN,        KC_TILD,    KC_QUOT,    KC_DQT,     KC_UNDS,    KC_HASH,
-        DBL_PIPE,   KC_ASTR,    DBL_EQL,    KC_LBRC,    KC_RBRC,        KC_GRV,     KC_LT,      KC_GT,      SN_TOGG,    DDOT_SLSH,
-                                ___,        ___,        ___,            XXX,        ___,        QK_BOOT
+        KC_PIPE,    KC_ASTR,    DBL_EQL,    KC_LBRC,    KC_RBRC,        KC_GRV,     KC_LT,      KC_GT,      TOGGLE_OS,  DDOT_SLSH,
+                                ___,        ___,        ___,            ___,        ___,        QK_RBT
     ),
 
     [NAV] = LAYOUT(
-        KC_HOME,    TD(BCK_FWD),    TD(FND_REP),    KC_END,     KC_PSCR,        KC_F10,    KC_F7,  KC_F8,  KC_F9,  KC_F13,
-        KC_LEFT,    KC_UP,          KC_DOWN,        KC_RIGHT,   SAVE,           KC_F11,    KC_F4,  KC_F5,  KC_F6,  KC_F14,
-        UNDO,       REDO,           TD(CPY_CUT),    PASTE,      CMMNT,          KC_F12,    KC_F1,  KC_F2,  KC_F3,  KC_F15,
-                                    QK_BOOT,        ___,        XXX,            ___,    ___,    ___
+        LINE_LEFT,  WORD_LEFT,  WORD_RIGHT,     LINE_RIGHT, SAVE,       KC_F10,     KC_F7,  KC_F8,  KC_F9,  KC_F13,
+        KC_LEFT,    KC_UP,      KC_DOWN,        KC_RIGHT,   FIND,       KC_F11,     KC_F4,  KC_F5,  KC_F6,  KC_F14,
+        UNDO,       REDO,       TD(CPY_CUT),    PASTE,      CMMNT,      KC_F12,     KC_F1,  KC_F2,  KC_F3,  KC_F15,
+                                QK_RBT,         ___,        ___,        ___,        ___,    ___
     ),
 
     [NUM] = LAYOUT(
-        WORD_LEFT,      SCRL_UP,        SCRL_DOWN,      WORD_RIGHT,     SEL_LINE,           KC_PERC,    KC_7,   KC_8,   KC_9,   KC_COLN,
+        TD(SEL_L_TD),   SEL_W_LEFT,     SEL_W_RIGHT,    TD(SEL_R_TD),   SEL_ALL,            KC_PERC,    KC_7,   KC_8,   KC_9,   KC_COLN,
         OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LSFT),  OSM(MOD_LCTL),  QK_REP,             KC_DOT,     KC_4,   KC_5,   KC_6,   KC_0,
         HYP_4,          HYP_3,          HYP_2,          HYP_1,          HYP_0,              KC_COMM,    KC_1,   KC_2,   KC_3,   KC_SLSH,
-                                        QK_RBT,         XXX,            ___,                ___,        ___,    ___
+                                        QK_BOOT,        ___,            ___,                ___,        ___,    ___
     ),
 
     [VSCODE] = LAYOUT(
-        SEL_W_LEFT,     SEL_L_LEFT,     SEL_L_RIGHT,    SEL_W_RIGHT,    FOLD_REG,           PALLATE,    SEL_L_LEFT, MV_L_DOWN,  MV_L_UP,    SEL_L_RIGHT,
+        XXX,            XXX,            XXX,            XXX,            FOLD_REG,           XXX,        PALLATE,    CUR_UP,     CUR_DOWN,   CUR_UNDO,
         OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LSFT),  OSM(MOD_LCTL),  QK_REP,             ZEN_MODE,   FILE_LEFT,  TOG_TERM,   FTREE_TOG,  FILE_RIGHT,
-        BOX_LEFT,       BOX_UP,         BOX_DOWN,       BOX_RIGHT,      UNFOLD_REG,         TOG_WRDW,   RVL_EXP,    CUR_DOWN,   CUR_UP,     CUR_UNDO,
-                                        ___,            ___,            ___,                ___,        XXX,        QK_RBT
+        XXX,            XXX,            XXX,            XXX,            UNFOLD_REG,         TOG_WRDW,   BOX_LEFT,   BOX_UP,     BOX_DOWN,   BOX_RIGHT,
+                                        ___,            ___,            ___,                ___,        ___,        QK_BOOT
     ),
 };
